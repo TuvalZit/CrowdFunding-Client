@@ -1,18 +1,37 @@
-import React from "react";
-import { createRoot } from "react-dom/client";
-import App from "./App";
+//External Imports
+import React, { StrictMode } from "react";
+import ReactDOM from "react-dom/client";
 import { ChainId, ThirdwebProvider } from "@thirdweb-dev/react";
-import "./styles/globals.css";
-
-// This is the chainId your dApp will work on.
-const activeChainId = ChainId.Mainnet;
-
-const container = document.getElementById("root");
-const root = createRoot(container);
+import { ThemeProvider } from "theme-ui";
+import { Global } from "@emotion/react";
+import { Provider } from "react-redux";
+//=================================================================
+//Internal Imports
+import App from "./App";
+import theme from "./common/theme";
+import { StateContextProvider } from "./context";
+import store from "./redux/store";
+//=================================================================
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    <ThirdwebProvider desiredChainId={activeChainId}>
-      <App />
-    </ThirdwebProvider>
-  </React.StrictMode>
+  <ThirdwebProvider desiredChainId={ChainId.Goerli}>
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <Global
+          styles={() => ({
+            body: {
+              overflowY: "visible !important",
+              margin: 0,
+              WebkitFontSmoothing: "antialiased",
+              MozOsxFontSmoothing: "grayscale",
+              height: "100%",
+            },
+          })}
+        />
+        <StateContextProvider>
+          <App />
+        </StateContextProvider>
+      </ThemeProvider>
+    </Provider>
+  </ThirdwebProvider>
 );
