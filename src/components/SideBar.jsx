@@ -1,13 +1,15 @@
-import React, { useContext, useEffect, useState } from "react";
+//External Imports
+import React, { useState } from "react";
 import { Flex, Image } from "theme-ui";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { logo, logout, sun } from "../assets";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+//=================================================================
+//Internal Imports
+import { logo, logout } from "../assets";
 import { navlinks } from "../contants/index.js";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  setFiltering,
-} from "../redux/slices/campaignSlice";
+import { setFiltering } from "../redux/slices/campaignSlice";
 import { useStateContext } from "../context";
+//=================================================================
 const Icon = ({
   name,
   key,
@@ -44,14 +46,21 @@ const Icon = ({
 };
 const SideBar = () => {
   const navigate = useNavigate();
-  let location = useLocation();
   const [isActive, setIsActive] = useState("");
   const dispatch = useDispatch();
-  const { disconnect } = useStateContext();
-  useEffect(() => {
-    console.log("sideBar item", location.pathname.split("/")[1]);
-    console.log(isActive && isActive === location.pathname.split("/")[1]);
-  }, [location]);
+  const { address, disconnect } = useStateContext();
+  const handleClick = (link) => {
+    if (link.name === "create-campaign" && address) {
+      setIsActive(link.name);
+      dispatch(setFiltering(false));
+      navigate(link.link);
+    }
+    if (link.name !== "create-campaign") {
+      setIsActive(link.name);
+      dispatch(setFiltering(false));
+      navigate(link.link);
+    }
+  };
   return (
     <Flex
       sx={{
@@ -61,6 +70,7 @@ const SideBar = () => {
         position: "fixed",
         top: "5px",
         alignSelf: "flex-start",
+        zIndex: "20",
       }}
     >
       <Link to="/">
@@ -99,13 +109,7 @@ const SideBar = () => {
                   name={link.name}
                   {...link}
                   isActive={isActive}
-                  handleClick={() => {
-                    if (!link.disabled) {
-                      setIsActive(link.name);
-                      dispatch(setFiltering(false));
-                      navigate(link.link);
-                    }
-                  }}
+                  handleClick={() => handleClick(link)}
                 />
               );
             }

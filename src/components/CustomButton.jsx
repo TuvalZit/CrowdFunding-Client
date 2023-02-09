@@ -1,6 +1,7 @@
+//External Imports
 import React from "react";
 import { Button } from "theme-ui";
-
+//===================================================
 const CustomButton = ({ btnType, title, handleClick, ...props }) => {
   return (
     <Button
@@ -16,6 +17,7 @@ const CustomButton = ({ btnType, title, handleClick, ...props }) => {
         height: "52px",
         px: "10px",
         borderRadius: "10px",
+        cursor: "pointer",
         ...props.sx,
       }}
       onClick={handleClick}
@@ -24,5 +26,5 @@ const CustomButton = ({ btnType, title, handleClick, ...props }) => {
     </Button>
   );
 };
-
+//===================================================
 export default CustomButton;

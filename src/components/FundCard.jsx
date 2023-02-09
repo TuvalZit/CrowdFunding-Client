@@ -1,8 +1,8 @@
 import React, { forwardRef } from "react";
 import { Flex, Image, Text } from "theme-ui";
 
-import { tagType, thirdweb } from "../assets";
-import { daysLeft } from "../utils";
+import { profile, tagType, thirdweb } from "../assets";
+import { calculateBarPercentage, daysLeft } from "../utils";
 
 const FundCard = forwardRef(
   ({
@@ -23,12 +23,13 @@ const FundCard = forwardRef(
         onScroll={handleScroll}
         ref={_ref}
         sx={{
-          width: "320px",
+          width: "100%",
           maxHeight: "480px",
           borderRadius: "15px",
           bg: "#1c1c24",
           cursor: "pointer",
           flexDirection: "column",
+          ":hover": { boxShadow: "0 0 2pt 2pt #00b9bc" },
         }}
         onClick={handleClick}
       >
@@ -90,7 +91,7 @@ const FundCard = forwardRef(
               sx={{
                 fontFamily: "sans-serif",
                 fontWeight: "semiBold",
-                fontSize: "16px",
+                fontSize: "20px",
                 color: "white",
                 textAlign: "left",
                 lineHeight: "26px",
@@ -103,7 +104,7 @@ const FundCard = forwardRef(
             </Text>
             <Text
               sx={{
-                mt: "5px",
+                mt: "7px",
                 fontFamily: "sans-serif",
                 fontWeight: "normal",
                 fontSize: "16px",
@@ -133,7 +134,7 @@ const FundCard = forwardRef(
                 sx={{
                   fontFamily: "sans-serif",
                   fontWeight: "semiBold",
-                  fontSize: "14px",
+                  fontSize: "20px",
                   color: "#b2b3bd",
                   lineHeight: "22px",
                 }}
@@ -161,7 +162,7 @@ const FundCard = forwardRef(
                 sx={{
                   fontFamily: "sans-serif",
                   fontWeight: "semiBold",
-                  fontSize: "14px",
+                  fontSize: "20px",
                   color: remainingDays > 0 ? "#b2b3bd" : "#FF3131",
                   lineHeight: "22px",
                 }}
@@ -201,15 +202,14 @@ const FundCard = forwardRef(
                 borderRadius: "9999px",
                 justifyContent: "center",
                 alignItems: "center",
-                bg: "#13131a",
               }}
             >
               <Image
-                src={thirdweb}
+                src={profile}
                 alt="user"
                 sx={{
-                  width: "50%",
-                  height: "50%",
+                  width: "100%",
+                  height: "100%",
                   objectFit: "contain",
                 }}
               />
@@ -217,17 +217,43 @@ const FundCard = forwardRef(
             <Flex
               sx={{
                 flext: "1",
-                fontFamily: "sans-serif",
-                fontWeight: "normal",
-                fontSize: "12px",
-                color: "#808191",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
               }}
             >
-              by&nbsp; <Text sx={{ color: "#b2b3bd" }}>{owner}</Text>
+              <Text
+                sx={{
+                  color: "#b2b3bd",
+                  fontFamily: "sans-serif",
+                  fontWeight: "normal",
+                  fontSize: "12px",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                by&nbsp;{owner}
+              </Text>
             </Flex>
+          </Flex>
+          <Flex
+            id="progress-bar-frame"
+            sx={{
+              position: "relative",
+              width: "100%",
+              height: "5px",
+              bg: "#3a3a43",
+              mt: "5px",
+            }}
+          >
+            <Flex
+              id="progress-bar-process"
+              sx={{
+                position: "absolute",
+                height: "100%",
+                bg: "#FF8848",
+                width: `${calculateBarPercentage(target, amountCollected)}%`,
+                maxWidth: "100%",
+              }}
+            ></Flex>
           </Flex>
         </Flex>
       </Flex>

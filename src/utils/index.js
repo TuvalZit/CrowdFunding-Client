@@ -20,3 +20,37 @@ export const checkIfImage = (url, callback) => {
   img.onload = () => callback(true);
   img.onerror = () => callback(false);
 };
+
+export const compareCampaigns = (c1, c2) => {
+  let remainingDays1 = daysLeft(c1.deadline);
+  let remainingDays2 = daysLeft(c2.deadline);
+  return remainingDays1 - remainingDays2;
+};
+
+export const descendCompareCampaigns = (c1, c2) => {
+  let remainingDays1 = daysLeft(c1.deadline);
+  let remainingDays2 = daysLeft(c2.deadline);
+  return remainingDays2 - remainingDays1;
+};
+export const sortCampaigns = (data) => {
+  let negativeArr = [],
+    positiveArr = [];
+  let remainingDays;
+  data.map((camp) => {
+    remainingDays = daysLeft(camp.deadline);
+    remainingDays > 0 ? positiveArr.push(camp) : negativeArr.push(camp);
+  });
+  let sortedArr = [
+    ...positiveArr.sort(compareCampaigns),
+    ...negativeArr.sort(descendCompareCampaigns),
+  ];
+  return sortedArr;
+};
+export const getMinimumDate = () => {
+  var today = new Date();
+  var dd = String(today.getDate()).padStart(2, "0");
+  var mm = String(today.getMonth() + 1).padStart(2, "0");
+  var yyyy = today.getFullYear();
+  today = yyyy + "-" + mm + "-" + dd;
+  return today;
+};

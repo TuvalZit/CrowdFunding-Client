@@ -1,9 +1,15 @@
+//External Imports
 import React from "react";
 import { Flex, Text } from "theme-ui";
-
+//===================================================================================
+/*
+ *  CountBox - Container for Campaign-Deatils page.
+ *  There are 3 types of CountBox: days left, raised, backers
+ */
 const CountBox = ({ title, value }) => {
   return (
     <Flex
+      id="CountBox-Container"
       sx={{
         flexDirection: "column",
         alignItems: "center",
@@ -11,6 +17,7 @@ const CountBox = ({ title, value }) => {
       }}
     >
       <Flex
+        id="CountBox-Header-Container"
         sx={{
           padding: "3px",
           bg: "#1c1c24",
@@ -23,6 +30,7 @@ const CountBox = ({ title, value }) => {
         }}
       >
         <Text
+          id="CountBox-Header-Text"
           sx={{
             fontFamily: "sans-serif",
             fontWeight: "bold",
@@ -39,6 +47,7 @@ const CountBox = ({ title, value }) => {
         </Text>
       </Flex>
       <Flex
+        id="CountBox-Footer-Container"
         sx={{
           px: "3px",
           py: "2px",
@@ -51,6 +60,7 @@ const CountBox = ({ title, value }) => {
         }}
       >
         <Text
+          id="CountBox-Footer-Text"
           sx={{
             fontFamily: "sans-serif",
             fontWeight: "normal",
@@ -66,5 +76,5 @@ const CountBox = ({ title, value }) => {
     </Flex>
   );
 };
-
+//===================================================================================
 export default CountBox;

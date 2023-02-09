@@ -1,4 +1,4 @@
-import React, { useContext, createContext } from "react";
+import React, { useContext, createContext, useState } from "react";
 
 import {
   useAddress,
@@ -6,27 +6,25 @@ import {
   useMetamask,
   useContractWrite,
   useDisconnect,
+  useContractRead,
 } from "@thirdweb-dev/react";
 import { ethers } from "ethers";
-import { EditionMetadataWithOwnerOutputSchema } from "@thirdweb-dev/sdk";
-
-//4 newest and then order by deadline/raised
-//one more button to scroll back
-//"0xC93fD4A4D714675F6702D07697e583891d35cfBE" - mycontract
+//=======================================================================================================
 const StateContext = createContext();
 
 export const StateContextProvider = ({ children }) => {
   const { contract } = useContract(
-    "0xf59A1f8251864e1c5a6bD64020e3569be27e6AA9"
+    "0xC93fD4A4D714675F6702D07697e583891d35cfBE"
   );
   const { mutateAsync: createCampaign } = useContractWrite(
     contract,
     "createCampaign"
   );
-
+  const { data, isLoading, error } = useContractRead(contract);
   const address = useAddress();
   const connect = useMetamask();
   const disconnect = useDisconnect();
+  const [isCampaignCreated, setIsCampaignCreated] = useState(false);
 
   const publishCampaign = async (form) => {
     try {
@@ -40,8 +38,10 @@ export const StateContextProvider = ({ children }) => {
       ]);
 
       console.log("contract call success", data);
+      setIsCampaignCreated(true);
     } catch (error) {
       console.log("contract call failure", error);
+      setIsCampaignCreated(false);
     }
   };
 
@@ -110,6 +110,9 @@ export const StateContextProvider = ({ children }) => {
         donate,
         getDonations,
         disconnect,
+        data,
+        isCampaignCreated,
+        setIsCampaignCreated,
       }}
     >
       {children}

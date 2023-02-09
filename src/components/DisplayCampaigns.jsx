@@ -1,117 +1,124 @@
 //External Imports
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 //Internal Imports
 import FundCard from "./FundCard";
 import { loader } from "../assets";
 import { Flex, Image, Text } from "theme-ui";
 import ScrollToTopButton from "./ScrollToTopButton";
-import { useDispatch, useSelector } from "react-redux";
-import { setCampaigns } from "../redux/slices/campaignSlice";
+import {
+  setCampaigns,
+  setFilteredCampaigns,
+  setFilteredUserCampaigns,
+  setUserCampaigns,
+} from "../redux/slices/campaignSlice";
 import { useStateContext } from "../context";
-import { daysLeft } from "../utils";
+import { sortCampaigns } from "../utils";
 const DisplayCampaigns = ({ title, profilePage = false }) => {
   //Context
   const { address, contract, getCampaigns, getUserCampaigns } =
     useStateContext();
   //Redux
   const dispatch = useDispatch();
+  const {
+    campaigns,
+    isFiltering,
+    filteredCampaigns,
+    userCampaigns,
+    filteredUserCampaigns,
+  } = useSelector((state) => state.campaign);
   //States
   const [isLoading, setIsLoading] = useState(false);
   //const [campaigns, setCampaignsState] = useState([]);
   const [items, setItems] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
-
-  const compareCampaigns = (c1, c2) => {
-    let remainingDays1 = daysLeft(c1.deadline);
-    let remainingDays2 = daysLeft(c2.deadline);
-    return remainingDays1 - remainingDays2;
-  };
-  const descendCompareCampaigns = (c1, c2) => {
-    let remainingDays1 = daysLeft(c1.deadline);
-    let remainingDays2 = daysLeft(c2.deadline);
-    return remainingDays2 - remainingDays1;
-  };
-  const sortCampaigns = (data) => {
-    let negativeArr = [],
-      positiveArr = [];
-    let remainingDays;
-    data.map((camp) => {
-      remainingDays = daysLeft(camp.deadline);
-      remainingDays > 0 ? positiveArr.push(camp) : negativeArr.push(camp);
-    });
-
-    console.log(negativeArr.map((camp) => daysLeft(camp.deadline)));
-    let sortedArr = [
-      ...positiveArr.sort(compareCampaigns),
-      ...negativeArr.sort(descendCompareCampaigns),
-    ];
-    console.log(sortedArr);
-    return sortedArr;
-  };
-  const fetchCampaigns = async () => {
-    setIsLoading(true);
-    const data = await getCampaigns();
-    let sortedArray = sortCampaigns(data);
-    dispatch(setCampaigns([...sortedArray]));
-    setIsLoading(false);
-  };
-  const fetchUserCampaigns = async () => {
-    setIsLoading(true);
-    const data = await getUserCampaigns();
-    dispatch(setCampaigns([...data]));
-    setIsLoading(false);
-  };
-  const { campaigns, isFiltering, filteredCampaigns } = useSelector(
-    (state) => state.campaign
-  );
-  useEffect(() => {
-    if (contract) {
-      profilePage ? fetchUserCampaigns() : fetchCampaigns();
-    }
-  }, [address, contract]);
   //Constants
   const itemsPerPage = 20;
-
   //Use Refs
   const observer = useRef();
   const tempRef = useRef();
   //Router
   const navigate = useNavigate();
+  //Function
+  const fetchCampaigns = async () => {
+    setIsLoading(true);
+    const data = await getCampaigns();
+    let sortedArray = sortCampaigns(data);
+    dispatch(setCampaigns([...sortedArray]));
+    dispatch(setFilteredCampaigns([...sortedArray]));
+    setIsLoading(false);
+  };
+  const fetchUserCampaigns = async () => {
+    setIsLoading(true);
+    const data = await getUserCampaigns();
+    let sortedArray = sortCampaigns(data);
+    dispatch(setUserCampaigns([...sortedArray]));
+    dispatch(setFilteredUserCampaigns([...sortedArray]));
+    setIsLoading(false);
+  };
   //------------------------------------------------------------
-  //Use Effects
+  //UseEffects - To fetch campaigns
+  useEffect(() => {
+    if (profilePage === false && !campaigns) {
+      fetchCampaigns();
+    } else if (address && profilePage === true && !userCampaigns) {
+      fetchUserCampaigns();
+    } else if (!address) {
+      dispatch(setUserCampaigns(null));
+    }
+  }, [address, contract]);
+  //------------------------------------------------------------
+  //Use Effects - To initialize campaigns
   useEffect(() => {
     setPage(0);
-    if (isFiltering && filteredCampaigns) {
-      setItems([...filteredCampaigns?.slice(0, itemsPerPage)]);
-    } else if (campaigns) {
-      setItems([...campaigns.slice(0, itemsPerPage)]);
+    if (profilePage === false) {
+      if (filteredCampaigns) {
+        setItems(filteredCampaigns?.slice(0, itemsPerPage));
+      } else {
+        setItems(campaigns?.slice(0, itemsPerPage));
+      }
+    } else {
+      console.log(filteredUserCampaigns?.slice(0, itemsPerPage));
+      if (filteredUserCampaigns) {
+        setItems(filteredUserCampaigns?.slice(0, itemsPerPage));
+      } else setItems(userCampaigns?.slice(0, itemsPerPage));
     }
-  }, [campaigns, filteredCampaigns]);
+  }, [address, filteredCampaigns, filteredUserCampaigns]);
   //------------------------------------------------------------
+  //Use Effect - To Inifinity scroll and show more campaigns on screen
   useEffect(() => {
-    let totalCampaigns = !isFiltering
-      ? campaigns?.length
-      : filteredCampaigns?.length;
+    let totalCampaigns =
+      profilePage === false
+        ? filteredCampaigns?.length
+        : filteredUserCampaigns?.length;
     let tempArr = [];
+    console.log("total campaings", totalCampaigns);
     if (totalCampaigns > 0 && totalCampaigns > itemsPerPage) {
       let end = page * itemsPerPage + itemsPerPage;
       if (!isFiltering) {
-        tempArr.push(...campaigns.slice(0, end));
+        if (profilePage === false) tempArr.push(...campaigns?.slice(0, end));
+        else tempArr.push(...userCampaigns?.slice(0, end));
       } else {
-        tempArr.push(...filteredCampaigns.slice(0, end));
+        if (profilePage === false)
+          tempArr.push(...filteredCampaigns?.slice(0, end));
+        else tempArr.push(...filteredUserCampaigns?.slice(0, end));
       }
       setItems([...tempArr]);
       setHasMore(tempArr.length < totalCampaigns);
     }
-  }, [page, campaigns, filteredCampaigns]);
+  }, [page]);
   //------------------------------------------------------------
   //Functions
+  /**
+   * Handle Navigate from specific campaign
+   */
   const handleNavigate = (campaign) => {
     navigate(`/campaign-details/${campaign.title}`, { state: campaign });
   };
   //------------------------------------------------------------
+  //Set next page when the last campaign is shown on screen
   const lastCampaignRef = useCallback(
     (node) => {
       if (observer.current) observer.current.disconnect();
@@ -136,7 +143,11 @@ const DisplayCampaigns = ({ title, profilePage = false }) => {
           textAlign: "left",
         }}
       >
-        {title} ({!isFiltering ? campaigns?.length : filteredCampaigns?.length})
+        {title} (
+        {profilePage === false
+          ? filteredCampaigns?.length
+          : filteredUserCampaigns?.length}
+        )
       </Text>
 
       <Flex
@@ -146,6 +157,7 @@ const DisplayCampaigns = ({ title, profilePage = false }) => {
           gap: "26px",
           display: "grid",
           gridTemplateColumns: "1fr 1fr 1fr 1fr",
+          position: "relative",
         }}
       >
         {isLoading && (
@@ -160,7 +172,7 @@ const DisplayCampaigns = ({ title, profilePage = false }) => {
           />
         )}
 
-        {!isLoading && profilePage && items && items.length === 0 && (
+        {!isLoading && profilePage === true && items && items.length === 0 && (
           <Text
             sx={{
               fontFamily: "sans-serif",
@@ -198,10 +210,21 @@ const DisplayCampaigns = ({ title, profilePage = false }) => {
               );
             }
           })}
+        <Flex
+          sx={{
+            position: "fixed",
+            bottom: "0px",
+            height: "50px",
+            maxWidth: "1280px",
+            width: "1280px",
+          }}
+        >
+          <Flex sx={{ position: "relative", width: "100%" }}>
+            <ScrollToTopButton />
+          </Flex>
+        </Flex>
       </Flex>
-      <ScrollToTopButton />
     </Flex>
   );
 };
-
 export default DisplayCampaigns;

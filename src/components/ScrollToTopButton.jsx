@@ -1,6 +1,10 @@
+//External Imports
 import React, { useEffect, useState } from "react";
 import { Image } from "theme-ui";
+//=================================================================
+//Internal Imports
 import { scrollUp } from "../assets";
+//=================================================================
 const ScrollToTopButton = () => {
   const [visible, setVisible] = useState(false);
 
@@ -30,10 +34,10 @@ const ScrollToTopButton = () => {
       sx={{
         display: visible ? "inline" : "none",
         opacity: visible ? "1" : "0",
-        position: "fixed",
+        position: "absolute",
         width: "50px",
-        left: "75.5%",
-        bottom: "40px",
+        right: "-50px",
+        bottom: "0px",
         height: "50px",
         fontSize: "3rem",
         zIndex: "1",

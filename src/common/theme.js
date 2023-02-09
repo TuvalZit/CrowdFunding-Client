@@ -38,5 +38,47 @@ export const theme = {
       fontWeight: "heading",
     },
   },
+  forms: {
+    input: {
+      inputForm: {
+        padding: "15px",
+        outline: "none",
+        border: "solid 1px",
+        borderColor: "#3a3a43",
+        bg: "transparent",
+        fontFamily: "sans-serif",
+        color: "white",
+        fontSize: "14px",
+        "::placeholder": { color: "#4b5264" },
+        borderRadius: "10px",
+      },
+    },
+    label: {
+      inputLabel: {
+        fontFamily: "sans-serif",
+        fontWeight: "medium",
+        fontSize: "14px",
+        lineHeight: "22px",
+        color: "#808191",
+        mb: "10px",
+      },
+    },
+    textarea: {
+      story: {
+        py: "15px",
+        resize: "none",
+        px: "15px",
+        outline: "none",
+        border: "solid 1px",
+        borderColor: "#3a3a43",
+        bg: "transparent",
+        fontFamily: "sans-serif",
+        color: "white",
+        fontSize: "14px",
+        "::placeholder": { color: "#4b5264" },
+        borderRadius: "10px",
+      },
+    },
+  },
 };
 export default theme;

@@ -31,18 +31,19 @@ const CampaignDetails = () => {
 
   const handleDonate = async () => {
     setIsLoading(true);
-
     await donate(state.pId, amount);
-
     navigate("/");
     setIsLoading(false);
   };
 
   return (
-    <Layout>
-      <Flex sx={{ flexDirection: "column" }}>
-        {isLoading && <Loader />}
-
+    <Layout isLoading={isLoading}>
+      <Flex
+        sx={{
+          flexDirection: "column",
+          filter: isLoading ? "blur(5px)" : "none",
+        }}
+      >
         <Flex
           sx={{
             width: "100%",
@@ -65,8 +66,8 @@ const CampaignDetails = () => {
               alt="campaign"
               sx={{
                 width: "100%",
-                height: "410px",
-                objectFit: "cover",
+                height: "350px",
+                objectFit: "fit",
                 borderRadius: "12px",
               }}
             />
@@ -78,6 +79,7 @@ const CampaignDetails = () => {
                 height: "5px",
                 bg: "#3a3a43",
                 mt: "2px",
+                borderRadius: "9999px",
               }}
             >
               <Flex
@@ -85,6 +87,7 @@ const CampaignDetails = () => {
                 sx={{
                   position: "absolute",
                   height: "100%",
+                  borderRadius: "9999px",
                   bg: "#4acd8d",
                   width: `${calculateBarPercentage(
                     state.target,
@@ -413,9 +416,8 @@ const CampaignDetails = () => {
                   title="Fund Campaign"
                   sx={{
                     width: "100%",
-                    bg: "#8c6dfd",
+                    bg: "#00b9bc",
                   }}
-                  styles="w-full bg-[#8c6dfd]"
                   handleClick={handleDonate}
                 />
               </Flex>

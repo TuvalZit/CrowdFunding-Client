@@ -5,8 +5,8 @@ import { ethers } from "ethers";
 import { useStateContext } from "../context";
 import { money } from "../assets";
 import { CustomButton, FormField, Loader } from "../components";
-import { checkIfImage } from "../utils";
-import { Box, Flex, Image, Text } from "theme-ui";
+import { checkIfImage, getMinimumDate } from "../utils";
+import { Flex, Image, Text } from "theme-ui";
 import Layout from "../components/Layout";
 
 const CreateCampaign = () => {
@@ -37,7 +37,7 @@ const CreateCampaign = () => {
           target: ethers.utils.parseUnits(form.target, 18),
         });
         setIsLoading(false);
-        navigate("/");
+        window.location.reload(true);
       } else {
         alert("Provide valid image URL");
         setForm({ ...form, image: "" });
@@ -46,7 +46,7 @@ const CreateCampaign = () => {
   };
 
   return (
-    <Layout>
+    <Layout isLoading={isLoading}>
       <Flex
         sx={{
           flexDirection: "column",
@@ -55,18 +55,27 @@ const CreateCampaign = () => {
           bg: "#1c1c24",
           borderRadius: "10px",
           padding: "10px",
+          filter: isLoading ? "blur(5px)" : "none",
         }}
       >
-        {isLoading && <Loader />}
         <Flex
           sx={{
             justifyContent: "center",
             alignItems: "center",
             padding: "16px",
-            bg: "#3a3a43",
+            bg: "#00b9bc",
             borderRadius: "10px",
           }}
         >
+          <Image
+            src={money}
+            alt="money"
+            sx={{
+              width: "40px",
+              height: "40px",
+              objectFit: "contain",
+            }}
+          />
           <Text
             sx={{
               fontFamily: "sans-serif",
@@ -78,15 +87,6 @@ const CreateCampaign = () => {
           >
             Start a Campaign
           </Text>
-          <Image
-            src={money}
-            alt="money"
-            sx={{
-              width: "40px",
-              height: "40px",
-              objectFit: "contain",
-            }}
-          />
         </Flex>
 
         <Flex
@@ -109,6 +109,7 @@ const CreateCampaign = () => {
             <FormField
               labelName="Your Name *"
               placeholder="John Doe"
+              type="input"
               inputType="text"
               value={form.name}
               handleChange={(e) => handleFormFieldChange("name", e)}
@@ -116,27 +117,26 @@ const CreateCampaign = () => {
             <FormField
               labelName="Campaign Title *"
               placeholder="Write a title"
+              type="input"
               inputType="text"
               value={form.title}
               handleChange={(e) => handleFormFieldChange("title", e)}
             />
           </Flex>
-
           <FormField
             labelName="Story *"
             placeholder="Write your story"
-            isTextArea={true}
+            type="textarea"
             value={form.description}
             handleChange={(e) => handleFormFieldChange("description", e)}
           />
-
           <Flex
             sx={{
               width: "100%",
-              justifyContent: "start",
+              justifyContent: "center",
               alignItems: "center",
               padding: "4px",
-              bg: "#8c6dfd",
+              bg: "#FF8848",
               height: "120px",
               borderRadius: "10px",
             }}
@@ -172,6 +172,7 @@ const CreateCampaign = () => {
             <FormField
               labelName="Goal *"
               placeholder="ETH 0.50"
+              type="input"
               inputType="text"
               value={form.target}
               handleChange={(e) => handleFormFieldChange("target", e)}
@@ -179,7 +180,9 @@ const CreateCampaign = () => {
             <FormField
               labelName="End Date *"
               placeholder="End Date"
+              type="input"
               inputType="date"
+              min={getMinimumDate()}
               value={form.deadline}
               handleChange={(e) => handleFormFieldChange("deadline", e)}
             />
@@ -188,6 +191,7 @@ const CreateCampaign = () => {
           <FormField
             labelName="Campaign image *"
             placeholder="Place image URL of your campaign"
+            type="input"
             inputType="url"
             value={form.image}
             handleChange={(e) => handleFormFieldChange("image", e)}
@@ -203,7 +207,17 @@ const CreateCampaign = () => {
             <CustomButton
               btnType="submit"
               title="Submit new campaign"
-              styles="bg-[#1dc071]"
+              sx={{
+                bg: "#00b9bc",
+                fontFamily: "sans-serif",
+                fontWeight: "bold",
+                fontSize: "18px",
+                lineHeight: "38px",
+                color: "white",
+                ":hover": {
+                  outline: "solid #FF8848",
+                },
+              }}
             />
           </Flex>
         </Flex>
