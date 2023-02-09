@@ -88,7 +88,7 @@ const CampaignDetails = () => {
                   position: "absolute",
                   height: "100%",
                   borderRadius: "9999px",
-                  bg: "#4acd8d",
+                  bg: "#FF8848",
                   width: `${calculateBarPercentage(
                     state.target,
                     state.amountCollected
